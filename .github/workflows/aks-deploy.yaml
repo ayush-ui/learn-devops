@@ -32,7 +32,7 @@ jobs:
         az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --admin --overwrite-existing
 
     - name: Download Latest Image Tag
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: image-tag
 
