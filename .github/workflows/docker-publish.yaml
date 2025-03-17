@@ -1,4 +1,4 @@
-name: CI/CD - Build & Push React App
+name: CI/CD - Build & Deploy React App
 
 on:
   push:
@@ -11,7 +11,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    outputs:
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -26,22 +27,16 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Extract Commit SHA
-      id: vars
-      run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      id: set_image_tag
+      run: |
+        IMAGE_TAG=$(git rev-parse --short HEAD)
+        echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Build and Push Docker image
       run: |
-        docker build -t ayushmukherjee221b/react-app:$IMAGE_TAG .
-        docker push ayushmukherjee221b/react-app:$IMAGE_TAG
+        docker build -t ayushmukherjee22b/react-app:$IMAGE_TAG .
+        docker push ayushmukherjee22b/react-app:$IMAGE_TAG
 
     - name: Logout from Docker Hub
       run: docker logout
-
-    - name: Save Image Tag for Deployment
-      run: echo "IMAGE_TAG=$IMAGE_TAG" > image-tag.txt
-
-    - name: Upload Image Tag as Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: image-tag
-        path: image-tag.txt
