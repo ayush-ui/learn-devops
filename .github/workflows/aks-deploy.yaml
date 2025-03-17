@@ -17,13 +17,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Log in to Azure using OIDC
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        allow-no-subscriptions: true
+
     - name: Set up Kubernetes CLI
       uses: azure/setup-kubectl@v3
 
-    - name: Configure Kubeconfig
+    - name: Get AKS Credentials (Without kubeconfig)
       run: |
-        echo "${{ secrets.KUBECONFIG_TOKEN }}" > kubeconfig
-        export KUBECONFIG=$(pwd)/kubeconfig
+        az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --admin --overwrite-existing
 
     - name: Deploy to AKS
       run: |
