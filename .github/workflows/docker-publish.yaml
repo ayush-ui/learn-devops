@@ -25,13 +25,23 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Extract Commit SHA
+      id: vars
+      run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Build and Push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ayushmukherjee221b/react-app:latest
+      run: |
+        docker build -t ayushmukherjee22b/react-app:$IMAGE_TAG .
+        docker push ayushmukherjee22b/react-app:$IMAGE_TAG
 
     - name: Logout from Docker Hub
       run: docker logout
+
+    - name: Save Image Tag for Deployment
+      run: echo "IMAGE_TAG=$IMAGE_TAG" > image-tag.txt
+
+    - name: Upload Image Tag as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: image-tag
+        path: image-tag.txt

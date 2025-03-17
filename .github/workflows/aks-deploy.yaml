@@ -1,9 +1,6 @@
 name: Deploy to Azure Kubernetes Service (AKS)
 
 on:
-  push:
-    branches:
-      - main
   workflow_run:
     workflows: ["CI/CD - Build & Push React App"]
     types:
@@ -13,11 +10,10 @@ jobs:
   deploy-to-aks:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write 
-      contents: read     
+      id-token: write   
+      contents: read
 
     steps:
-    
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -35,7 +31,14 @@ jobs:
       run: |
         az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --admin --overwrite-existing
 
+    - name: Download Latest Image Tag
+      uses: actions/download-artifact@v3
+      with:
+        name: image-tag
+
+    - name: Read Image Tag
+      run: echo "IMAGE_TAG=$(cat image-tag.txt)" >> $GITHUB_ENV
+
     - name: Deploy to AKS
       run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
+        kubectl set image deployment/react-app react-app=ayushmukherjee22b/react-app:$IMAGE_TAG
