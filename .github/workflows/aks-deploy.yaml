@@ -23,6 +23,9 @@
       run: |
         az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --admin --overwrite-existing
 
+    - name: Debug: Print Received IMAGE_TAG
+      run: echo "IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}"
+
     - name: Deploy to AKS
       run: |
         kubectl set image deployment/react-app react-app=ayushmukherjee22b/react-app:${{ needs.build-and-push.outputs.image_tag }}
