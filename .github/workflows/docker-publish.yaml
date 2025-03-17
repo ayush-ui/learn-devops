@@ -35,8 +35,8 @@ jobs:
 
     - name: Build and Push Docker image
       run: |
-        docker build -t ayushmukherjee221b/react-app:$IMAGE_TAG .
-        docker push ayushmukherjee221b/react-app:$IMAGE_TAG
+        docker build -t ayushmukherjee221b/react-app:${{ env.image_tag }} .
+        docker push ayushmukherjee221b/react-app:${{ env.image_tag }}
 
     - name: Logout from Docker Hub
       run: docker logout
