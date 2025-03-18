@@ -31,13 +31,12 @@ jobs:
       run: |
         az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --admin --overwrite-existing
 
-    - name: Download Image Tag from Build Workflow
-      uses: actions/download-artifact@v4
-      with:
-        name: image-tag
-
-    - name: Read Image Tag
-      run: echo "IMAGE_TAG=$(cat image-tag.txt)" >> $GITHUB_ENV
+    - name: Retrieve Image Tag from Environment
+      run: |
+        IMAGE_TAG=$(gh variable get IMAGE_TAG --json body | jq -r '.body')
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Deploy to AKS
       run: |
