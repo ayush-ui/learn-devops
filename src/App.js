@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Made some more changes here
+          Hey Ayush, your CICD is working!!!
         </p>
         <a
           className="App-link"
